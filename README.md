@@ -35,3 +35,83 @@ So at the opposite end of the spectrum to the discussion-piece commit, some comm
   In the same vein is commits like `Revised widget controller as per JIRA-1257`. Sure, there's probably more information in Jira, but even if [you've configured hyperlinks from your repository to Jira issues](https://stackoverflow.com/a/58383541/1495729), a few words reminding readers about the purpose of `JIRA-1247` will go a long way in helping them to stay in the flow; and it will protect against spelling mistakes in codes, that could easily go unnoticed.
 
   ![Commits in BitBucket with hyperlinks to Jira issues](./assets/images/bitbucket_hyperlinks.png)
+
+## Synchronising History
+The most valuable aspect of version control is arguably its ability to manage divergent paths, bringing them back in sync so that the codebase can be advanced by a team rather than just a lone wolf.
+
+The popular ways of doing this are variations of `git merge` vs `git rebase`. *Merging* tries to interleave the history from both branches, then at the end, if there were any merge conflicts, there'll be a prompt to create a *merge commit*.
+
+The merge commit isn't ideal, as it strips code of its real provenance. If you look at `git blame`, you'll see that some lines didn't originate because of this feature or that feature − they arose because `Resolving merge conflicts`.
+
+One aspect of merging that's perhaps considered beneficial is its preservation of calendar history − the interleaving of the branches allows us to clearly see when each commit happened, but still, it's a false history − who's to say that the commits would've indeed happened this way, had the branches already been merged together? The surrounding code would've inevitably influenced each contributor's decisions, but by interleaving the commits, it's now unclear what the true context looked like.
+
+Merging branches preserves the history of people's timesheets, at the expense of being able to see the history of features evolving. [Daily Turing](https://frontend.turing.io/lessons/module-2/merge-vs-rebase.html?ads_cmpid=6451354298&ads_adid=76255849919&ads_matchtype=b&ads_network=g&ads_creative=378026856672&utm_term=&ads_targetid=dsa-416714872696&utm_campaign=&utm_source=adwords&utm_medium=ppc&ttv=2&gclid=Cj0KCQiA-bjyBRCcARIsAFboWg2sjj63NVQhJ3DILxifvCxcYLL-voud0wJ_I-vQHuV5hbvrbkTe77AaAlK1EALw_wcB) offers this useful example of merging branches:
+
+![A visualisation of merging](https://frontend.turing.io/assets/images/lessons/merge-rebase/merge-vs-rebase.png)
+
+A further detriment of merging is that it
+destroys the ability to roll back code. What if we deploy to production, then a few days later, notice that there was a bug? How do we roll back? Are we supposed to pick out this commit here and that commit there? How do we even know which ones were in each branch? For this kind of tricky situation, you might be stuck having to rely on [reflog](https://stackoverflow.com/questions/17857723/whats-the-difference-between-git-reflog-and-log) − your collection of commits that ever existed locally (this isn't propagated to your repository).
+
+**Rebasing** branches means that your current branch's commits will be applied after some other branch − it will have a new base for its existence. A typical workflow will look like this:
+
+```shell script
+git checkout master
+git pull
+git checkout -b widget
+…
+git add widget.py
+git add test/test_widget.py
+git add README.md
+git commit -m "Introducing widget (JIRA-580), for measuring metaphysical potential ⚗"
+
+echo "We better get all the changes that have been done in the meantime…"
+git checkout master
+git pull
+>>>remote: Enumerating objects: 24, done.
+>>>remote: Counting objects: 100% (24/24), done.
+>>>remote: Compressing objects: 100% (16/16), done.
+>>>remote: Total 24 (delta 10), reused 18 (delta 8), pack-reused 0
+>>>Updating 8bec076..0e939ad
+>>>Fast-forward
+
+git checkout widget
+git rebase master
+echo "Now all the changes in our branch have been moved to begin after master"
+```
+If you're working in a repository belonging to your company, an open-source project, or generally, *someone else*, the typical flow would now typically involve [creating a pull request](https://git-scm.com/book/en/v2/GitHub-Contributing-to-a-Project):
+```shell script
+git push --set-upstream origin widget
+>>> Visit https://github.com/…/widget to open a pull request
+```
+If it's your own repository, it'd be simpler to run:
+```shell script
+git checkout master
+git merge master
+>>> Fast-forwarding…
+```
+
+Notice that like merging, this history is also reinvented − we're saying that *widget* was written when there was this other code there, which there wasn't. The date is still preserved though, even if it's not actually used for ordering anything. So if you look at `git blame`, you'll see that the commit is still associated with the date it was written.
+
+An exception to that date is when someone else does the merging:
+![A commit that's merged by someone other than the author](./assets/images/Someone_else_merging.png)
+
+Notice too that whenever merging and rebasing is done by someone else, the [*Verified* badge](https://help.github.com/en/github/authenticating-to-github/managing-commit-signature-verification) inevitably disappears. So not only does the verification help to prove your identity, it helps to catch errors in synchronising history − if you haven't already, make sure to generate a GPG key and start verifying your commits!
+
+## Common Traps
+### Revised History
+While you were on your *widget* branch, maybe master didn't go forward − maybe its `HEAD` was rewritten or even reverted, perhaps due to a [force push](https://evilmartians.com/chronicles/git-push---force-and-how-to-deal-with-it). The history might not have gone forward in master, while you were gone.
+
+In this case, you can rebase interactively (`git rebase --interactive master`). You'll get a choice about which commits you want; which will include all differences in your branch, even the ones that you didn't write (the ones that you had been relying on as your base). If you think that the new `master` still has much the same functionality as when you originally used it as a base, you can `drop` those outdated base commits that are lingering in your `widget` branch; and `pick` all of your commits that were actually relevant to implementing your widget.
+
+## Someone Merges / Rebases A Commit Incorrectly
+If you need to reinstate a commit, it'll be tempting for you to write a revision yourself and push it, with a commit message like `reinstating the thing`. Just like the *merge commit*, this mucks the history for that line. You'll just end up creating more confusion, guaranteeing an even more difficult scenario next time any merging / rebasing has to be done.
+
+Instead, you can [cherry-pick](https://git-scm.com/docs/git-cherry-pick) the commit that was meant to be the last for that line (but which was merged incorrectly). Edit everything to be in the state that you want for `HEAD`; and it'll now show in the history that this line originated because of that (unverified) original commit (being replayed), as opposed to `reinstating the thing`.
+
+## Tools
+Git can try to render a more visual representation of a project's history, with a fair few formatting parameters that wind up being impossible to remember, so once you've settled on something appealing to you, it's best to create an alias for it (credit to [Captain Lepton](https://superuser.com/a/828874)):
+```shell script
+git config --global alias.visualize "log --all --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
+echo "Now I can visualise repositories easily…"
+git visualize
+```
