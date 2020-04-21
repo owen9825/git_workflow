@@ -95,7 +95,7 @@ Notice that like merging, this history is also reinvented − we're saying that 
 An exception to that date is when someone else does the merging:
 ![A commit that's merged by someone other than the author](./assets/images/Someone_else_merging.png)
 
-Notice too that whenever merging and rebasing is done by someone else, the [*Verified* badge](https://help.github.com/en/github/authenticating-to-github/managing-commit-signature-verification) inevitably disappears. So not only does the verification help to prove your identity, it helps to catch errors in synchronising history − if you haven't already, make sure to generate a GPG key and start verifying your commits!
+Notice too that whenever merging and rebasing is done by someone else, the [*Verified* badge](https://help.github.com/en/github/authenticating-to-github/managing-commit-signature-verification) inevitably disappears. So not only does the verification help to prove your identity, it helps to catch errors in synchronising history − if you haven't already, **make sure to generate a GPG key and start verifying your commits!***
 
 ## Common Traps
 ### Revised History
@@ -107,6 +107,16 @@ In this case, you can rebase interactively (`git rebase --interactive master`). 
 If you need to reinstate a commit, it'll be tempting for you to write a revision yourself and push it, with a commit message like `reinstating the thing`. Just like the *merge commit*, this mucks the history for that line. You'll just end up creating more confusion, guaranteeing an even more difficult scenario next time any merging / rebasing has to be done.
 
 Instead, you can [cherry-pick](https://git-scm.com/docs/git-cherry-pick) the commit that was meant to be the last for that line (but which was merged incorrectly). Edit everything to be in the state that you want for `HEAD`; and it'll now show in the history that this line originated because of that (unverified) original commit (being replayed), as opposed to `reinstating the thing`.
+
+## Protecting Your commits
+In order to preserve your commits with the functionality you intended, there are some practical habits:
+* Avoid blank lines within functions. Git only considers a small window around changes, so if conflicting changes both involve a blank line above them or below them, you'll end up in a scenario where one function is starting within another function and it's a nightmare to resolve.
+
+  Besides avoiding the blank lines, you can also get into the habit of [writing Javadocs](https://www.jetbrains.com/help/idea/working-with-code-documentation.html). This will mean that everything has more context to it, and the ends of functions are kept in tact.
+
+* Update the documentation for your changes, in the same commit. Your repository can hold rich documentation in the form of [Markdown](https://guides.github.com/features/mastering-markdown/) and [PlantUML](https://plugins.jetbrains.com/plugin/7017-plantuml-integration). If anything is being refactored, your IDE will consider these in its search, as opposed to what happens if it's kept in eg Confluence − it goes stale, nobody knows that it's going stale, then it gets abandoned because it becomes easier to start again rather than updating it.
+
+* Include unit tests in your commits. While resolving a merge / rebase conflict, you'll need to keep pausing to resolve each commit. The code is meant to be valid at each stop, such that you can run the code, including tests. Make the most of this and help the merger to ensure that the codebase stays true to your commit.
 
 ## Tools
 Git can try to render a more visual representation of a project's history, with a fair few formatting parameters that wind up being impossible to remember, so once you've settled on something appealing to you, it's best to create an alias for it (credit to [Captain Lepton](https://superuser.com/a/828874)):
