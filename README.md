@@ -78,7 +78,7 @@ git checkout widget
 git rebase master
 echo "Now all the changes in our branch have been moved to begin after master"
 ```
-If you're working in a repository belonging to your company, an open-source project, or generally, *someone else*, the typical flow would now typically involve [creating a pull request](https://git-scm.com/book/en/v2/GitHub-Contributing-to-a-Project):
+If you're working in a repository belonging to your company, an open-source project, or generally, a repository belonging to *someone else*, the typical flow would now typically involve [creating a pull request](https://git-scm.com/book/en/v2/GitHub-Contributing-to-a-Project):
 ```shell script
 git push --set-upstream origin widget
 >>> Visit https://github.com/…/widget to open a pull request
@@ -108,7 +108,7 @@ If you need to reinstate a commit, it'll be tempting for you to write a revision
 
 Instead, you can [cherry-pick](https://git-scm.com/docs/git-cherry-pick) the commit that was meant to be the last for that line (but which was merged incorrectly). Edit everything to be in the state that you want for `HEAD`; and it'll now show in the history that this line originated because of that (unverified) original commit (being replayed), as opposed to `reinstating the thing`.
 
-## Protecting Your commits
+## Protecting Your Commits
 In order to preserve your commits with the functionality you intended, there are some practical habits:
 * Avoid blank lines within functions. Git only considers a small window around changes, so if conflicting changes both involve a blank line above them or below them, you'll end up in a scenario where one function is starting within another function and it's a nightmare to resolve.
 
