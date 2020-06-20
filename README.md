@@ -1,7 +1,7 @@
 # Git Workflow
 As a software system is evolving, it's useful to be able to understand how this evolution is happening, especially if it's being carried out by more than one instigator.
 
-This document describes best practices; a bit of explanation behind the choices; as well as practical tools and tips for adherence. It's assumed that readers are already familiar with [Git](https://git-scm.com/doc), such that they could vaguely describe most of the commands. The practices discussed will be mostly generalisable to other version control systems.
+This document describes best practices; a bit of explanation behind the choices; as well as practical tools and tips for adherence. It's assumed that readers are already familiar with [Git](https://git-scm.com/doc), such that they could vaguely describe most of the commands. The practices discussed will be mostly generalisable to other version-control systems.
 
 ## Extracting Value from Commits
 A legible history is not just useful for managing merge commits − it can also provide insight for project managers; for your fellow programmers; and for your robotic assistants:
@@ -86,7 +86,7 @@ git push --set-upstream origin widget
 If it's your own repository, it'd be simpler to run:
 ```shell script
 git checkout master
-git merge master
+git merge widget
 >>> Fast-forwarding…
 ```
 
