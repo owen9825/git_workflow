@@ -99,7 +99,7 @@ Notice too that whenever merging and rebasing is done by someone else, the [*Ver
 
 ## Common Traps
 ### Revised History
-While you were on your *widget* branch, maybe master didn't go forward − maybe its `HEAD` was rewritten or even reverted, perhaps due to a [force push](https://evilmartians.com/chronicles/git-push---force-and-how-to-deal-with-it). The history might not have gone forward in master, while you were gone.
+While you were on your *widget* branch, maybe master didn't go strictly forward, one step after the other − maybe its `HEAD` was rewritten or even reverted, perhaps due to a [force push](https://evilmartians.com/chronicles/git-push---force-and-how-to-deal-with-it). So getting the latest changes will now involve discarding or editing some of the commits that belong to your local version of master.
 
 In this case, you can rebase interactively (`git rebase --interactive master`). You'll get a choice about which commits you want; which will include all differences in your branch, even the ones that you didn't write (the ones that you had been relying on as your base). If you think that the new `master` still has much the same functionality as when you originally used it as a base, you can `drop` those outdated base commits that are lingering in your `widget` branch; and `pick` all of your commits that were actually relevant to implementing your widget.
 
