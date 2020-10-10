@@ -112,7 +112,7 @@ Instead, you can [cherry-pick](https://git-scm.com/docs/git-cherry-pick) the com
 In order to preserve your commits with the functionality you intended, there are some practical habits:
 * Avoid blank lines within functions. Git only considers a small window around changes, so if conflicting changes both involve a blank line above them or below them, you'll end up in a scenario where one function is starting within another function and it's a nightmare to resolve.
 
-  Besides avoiding the blank lines, you can also get into the habit of [writing Javadocs](https://www.jetbrains.com/help/idea/working-with-code-documentation.html). This will mean that everything has more context to it, and the ends of functions are kept in tact.
+  Besides avoiding the blank lines, you can also get into the habit of [writing Javadocs](https://www.jetbrains.com/help/idea/working-with-code-documentation.html). This will mean that everything has more context to it, and the ends of functions are kept intact.
 
 * Update the documentation for your changes, in the same commit. Your repository can hold rich documentation in the form of [Markdown](https://guides.github.com/features/mastering-markdown/) and [PlantUML](https://plugins.jetbrains.com/plugin/7017-plantuml-integration). If anything is being refactored, your IDE will consider these in its search, as opposed to what happens if it's kept in eg Confluence − it goes stale, nobody knows that it's going stale, then it gets abandoned because it becomes easier to start again rather than updating it.
 
